@@ -1,0 +1,15 @@
+query RemoteStores {
+  stores {
+    id
+    name
+    city
+    postalCode
+    availablePaymentMethods
+    services {
+      code
+      name {
+        en
+      }
+    }
+  }
+}

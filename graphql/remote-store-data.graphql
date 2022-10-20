@@ -1,0 +1,16 @@
+query RemoteStoreData($id: ID!) {
+  store(id: $id) {
+    id
+    name
+    city
+    products {
+      items {
+        id
+        ean
+        name
+        price
+        priceUnit
+      }
+    }
+  }
+}

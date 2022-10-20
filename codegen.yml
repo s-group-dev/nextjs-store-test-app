@@ -1,0 +1,25 @@
+overwrite: true
+generates:
+  ./types/document-nodes.ts:
+    documents:
+      - './**/*.graphql'
+    schema:
+      - 'https://api.test.voikukka.fi/graphql'
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typed-document-node'
+config:
+  reactApolloVersion: 3
+  avoidOptionals:
+    field: true
+    object: true
+    inputValue: false
+    defaultValue: true
+  nonOptionalTypename: true
+  scalars:
+    DateTime: Date
+  withHOC: false
+  withHooks: true
+  withComponent: false
+  preResolveTypes: false
