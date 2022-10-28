@@ -5,11 +5,5 @@ query RemoteStores {
     city
     postalCode
     availablePaymentMethods
-    services {
-      code
-      name {
-        en
-      }
-    }
   }
 }

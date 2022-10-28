@@ -219,6 +219,11 @@ export type Country = {
   code: Scalars['String'];
 };
 
+export enum CountryCode {
+  Et = 'ET',
+  Fi = 'FI'
+}
+
 export type CountryName = {
   __typename: 'CountryName';
   fi: Maybe<Scalars['String']>;
@@ -1188,6 +1193,7 @@ export type Query = {
    * Typically there's only one result, unless the query input is ambiguous.
    *
    * @param query the adddress input
+   * @param countryCode Limit address lookup inside a specific country, e.g. FIN
    * @param lang Change language of data, for example Finnish addresses in Swedish language
    */
   addressGeocode: Maybe<Array<AddressGeocodeResult>>;
@@ -1232,6 +1238,7 @@ export type QueryAddressAutocompleteArgs = {
 
 
 export type QueryAddressGeocodeArgs = {
+  countryCode: InputMaybe<Scalars['String']>;
   lang: InputMaybe<Scalars['String']>;
   query: Scalars['String'];
 };
@@ -1255,7 +1262,7 @@ export type QueryDeliveryAreaPinsArgs = {
 export type QueryDeliveryAreasArgs = {
   brand: InputMaybe<Scalars['String']>;
   deliveryMethod: InputMaybe<DeliveryMethod>;
-  onlySKaupat: InputMaybe<Scalars['Boolean']>;
+  domains: InputMaybe<Array<Domain>>;
   postalCode: InputMaybe<Scalars['String']>;
 };
 
@@ -1310,7 +1317,9 @@ export type QuerySearchDeliveryAreasArgs = {
 export type QuerySearchStoresArgs = {
   _dangerousLoadAllOverrideForSitemap: InputMaybe<Scalars['Boolean']>;
   brand: InputMaybe<StoreBrand>;
+  country: InputMaybe<CountryCode>;
   cursor: InputMaybe<Scalars['String']>;
+  domains: InputMaybe<Array<Domain>>;
   query: InputMaybe<Scalars['String']>;
 };
 
@@ -1327,7 +1336,7 @@ export type QueryStoreArgs = {
 
 export type QueryStoresArgs = {
   brand: InputMaybe<Scalars['String']>;
-  onlySKaupat: InputMaybe<Scalars['Boolean']>;
+  domains: InputMaybe<Array<Domain>>;
 };
 
 
@@ -1530,11 +1539,7 @@ export type Store = {
   domains: Array<Domain>;
   feedback: Maybe<StoreFeedback>;
   id: Scalars['ID'];
-  /** @deprecated Not supported anymore. Does not contain up-to-date information. This information is stored per pick-up points. */
-  latitude: Maybe<Scalars['Float']>;
   location: Maybe<StoreLocation>;
-  /** @deprecated Not supported anymore. Does not contain up-to-date information. This information is stored per pick-up points. */
-  longitude: Maybe<Scalars['Float']>;
   mandatoryProducts: Maybe<Array<Product>>;
   name: Scalars['String'];
   navigation: Maybe<Array<NavigationItem>>;
@@ -1559,6 +1564,7 @@ export type StoreMandatoryProductsArgs = {
   deliverySlotId: InputMaybe<Scalars['String']>;
   orderId: InputMaybe<Scalars['String']>;
   packagingMaterialEan: InputMaybe<Scalars['String']>;
+  reservationId: InputMaybe<Scalars['String']>;
 };
 
 
@@ -1632,11 +1638,7 @@ export type StoreInfo = {
   domains: Array<Domain>;
   feedback: Maybe<StoreFeedback>;
   id: Scalars['ID'];
-  /** @deprecated Not supported anymore. Does not contain up-to-date information. This information is stored per pick-up points. */
-  latitude: Maybe<Scalars['Float']>;
   location: Maybe<StoreLocation>;
-  /** @deprecated Not supported anymore. Does not contain up-to-date information. This information is stored per pick-up points. */
-  longitude: Maybe<Scalars['Float']>;
   name: Maybe<Scalars['String']>;
   postalCode: Maybe<Scalars['String']>;
   services: Maybe<Array<StoreService>>;
@@ -1829,17 +1831,9 @@ export type RemoteStoresQuery = (
   & { stores: Maybe<Array<(
     { __typename: 'StoreInfo' }
     & Pick<StoreInfo, 'id' | 'name' | 'city' | 'postalCode' | 'availablePaymentMethods'>
-    & { services: Maybe<Array<(
-      { __typename: 'StoreService' }
-      & Pick<StoreService, 'code'>
-      & { name: Maybe<(
-        { __typename: 'LocalizableText' }
-        & Pick<LocalizableText, 'en'>
-      )> }
-    )>> }
   )>> }
 );
 
 
 export const RemoteStoreDataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"RemoteStoreData"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"store"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"products"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"ean"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"priceUnit"}}]}}]}}]}}]}}]} as unknown as DocumentNode<RemoteStoreDataQuery, RemoteStoreDataQueryVariables>;
-export const RemoteStoresDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"RemoteStores"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"stores"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"postalCode"}},{"kind":"Field","name":{"kind":"Name","value":"availablePaymentMethods"}},{"kind":"Field","name":{"kind":"Name","value":"services"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"en"}}]}}]}}]}}]}}]} as unknown as DocumentNode<RemoteStoresQuery, RemoteStoresQueryVariables>;
+export const RemoteStoresDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"RemoteStores"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"stores"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"city"}},{"kind":"Field","name":{"kind":"Name","value":"postalCode"}},{"kind":"Field","name":{"kind":"Name","value":"availablePaymentMethods"}}]}}]}}]} as unknown as DocumentNode<RemoteStoresQuery, RemoteStoresQueryVariables>;
