@@ -11,7 +11,7 @@ you should have
 - npm
 
 ```bash
-  > git clone https://gitlab.sok.fi/sok-digikehitys/recruitment/nextjs-store-test-app.git
+  > git clone git@github.com:s-group-dev/nextjs-store-test-app.git
   > npm i
   > npm run dev
 ```
